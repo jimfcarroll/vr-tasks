@@ -1,0 +1,13 @@
+#Eclipse
+.classpath
+.project
+.settings
+.\#*
+\#*
+
+# mvn temps
+target
+dependency-reduced-pom.xml
+
+#credentials
+src/main/resources/client_secrets.json
