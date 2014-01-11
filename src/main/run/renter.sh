@@ -21,8 +21,7 @@ substitute()
     cd "$PWD"
 }
 
-TMPEXT=`date +%s`
-WORKING="/tmp/working.$TMPEXT"
+WORKING="/tmp/working.`date +%s`"
 
 DOCDIR="/home/jim/WindowsDisk/Documents/Real Estate/Arrowhead Lake Getaway"
 TEMPLATE1="Rental Contract - ONE PAYMENT TEMPLATE.docx"
@@ -142,17 +141,31 @@ fi
 
 OUTDOC="`date --date="$ARRIVAL" +%Y%m%d` - $RENTERNAME - Rental Contract.docx"
 
-mkdir "$WORKING"
+# set up the working directory
+mkdir -p "$WORKING"
+
+# copy the appropriate template into the working dir
 cp "$TEMPLATE" "$WORKING/tmp.docx"
 
+# store off the current directory so we can get back here
 CWD=`pwd`
 
+# go into the working directory and create a subdirectory for unzipping the docuemtn
 cd "$WORKING"
 mkdir unzipped
+
+# unzip the document into the new subdirectory
 cd unzipped
 unzip ../tmp.docx > /dev/null
 
+# go back to were we started
 cd "$CWD"
+
+########################################################
+# Do the subsititutions. The key's are expected to appear in the 
+# document with double curly braces around them. For example,
+# the first key 'securityPayment' appears in the document as
+# {{securityPayment}}.
 
 substitute "securityPayment" "$SECURITY.00"
 
@@ -185,11 +198,14 @@ substitute cleaningFee "$CLEANING.00"
 
 FULLPAYMENT=`expr $RENT + $SECURITY + $CLEANING`
 substitute fullPayment "$FULLPAYMENT.00"
+########################################################
 
+# Rewrite the document by zipping back up the modified parts
+# into the final
 cd "$WORKING/unzipped"
-
 jar -cvfM "$DOCDIR/$OUTDOC" * > /dev/null
 
+# go back to where we started
 cd "$CWD"
 
 rm -rf $WORKING
