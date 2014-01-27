@@ -1,8 +1,41 @@
 #!/bin/sh
 
+##############################################################
+## set the following variables accordingly
+GROOVY=/home/jim/utils/groovy-2.2.1/bin/groovy
+OPENDOC_COMMAND=xdg-open
+
+DOCDIR="/home/jim/Documents/Real Estate/Arrowhead Lake Getaway"
+TEMPLATE1="Rental Contract - ONE PAYMENT TEMPLATE.docx"
+TEMPLATE2="Rental Contract - TEMPLATE.docx"
+JARFILE="./vr-tasks-1.0.0.jar"
+
+WORKING="/tmp/working.`date +%s`"
+
+SECURITY="500"
+CLEANING="150"
+##############################################################
+
+RENTERNAME=
+ARRIVAL=
+DEPARTURE=
+URL=
+RENT=
+PAYMENTS=
+NUMADULTS=
+NUMCHILDREN=
+
 usage()
 {
     echo "usage: renter.sh -n \"Full Name\" -a MM/DD/YYYY -d MM/DD/YYYY -u (email url) -r rent-as-int -p 1|2 -na x -nc y"
+    echo "       -n: Renter's full name in quotes."
+    echo "       -a: Arrival Date MM/DD/YYYY."
+    echo "       -d: Departure Date MM/DD/YYYY."
+    echo "       -u: URL to the gmail email for this renter."
+    echo "       -r: Rental amount as an integer (no decimals)."
+    echo "       -p: The number of payments. Either 1 or 2."
+    echo "       -na: The number of adults."
+    echo "       -nc: The number of children."
     exit 1
 }
 
@@ -20,23 +53,6 @@ substitute()
 
     cd "$PWD"
 }
-
-WORKING="/tmp/working.`date +%s`"
-
-DOCDIR="/home/jim/WindowsDisk/Documents/Real Estate/Arrowhead Lake Getaway"
-TEMPLATE1="Rental Contract - ONE PAYMENT TEMPLATE.docx"
-TEMPLATE2="Rental Contract - TEMPLATE.docx"
-
-RENTERNAME=
-ARRIVAL=
-DEPARTURE=
-URL=
-RENT=
-SECURITY="500"
-CLEANING="150"
-PAYMENTS=
-NUMADULTS=
-NUMCHILDREN=
 
 while [ $# -gt 0 ]; do
     case $1 in
@@ -210,6 +226,6 @@ cd "$CWD"
 
 rm -rf $WORKING
 
-groovy -cp ./vr-tasks-1.0.0.jar task.groovy -a $ARRIVAL -n "$RENTERNAME" -u "$URL" -p $PAYMENTS
+$GROOVY -cp $JARFILE task.groovy -a $ARRIVAL -n "$RENTERNAME" -u "$URL" -p $PAYMENTS
 
-gnome-open "$DOCDIR/$OUTDOC"
+$OPENDOC_COMMAND "$DOCDIR/$OUTDOC"
